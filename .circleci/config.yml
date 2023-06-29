@@ -16,7 +16,8 @@ jobs:
             - run:
                 name: Test application
                 command: |
-                    TEST=$(circleci tests glob "src/__tests__/*.js" | circleci tests run --split-by=timings)
+                    TEST=$(circleci tests glob "src/__tests__/*.js" | circleci tests run --command="JEST_JUNIT_ADD_FILE_ATTRIBUTE=true 
+                    xargs npx jest --config jest.config.js --runInBand --" --verbose --split-by=timings)
                     yarn test $TEST
 
             - store_test_results:
