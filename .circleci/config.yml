@@ -11,7 +11,10 @@ jobs:
         steps:
             - checkout
             - node/install-packages:
-                pkg-manager: yarn      
+                pkg-manager: yarn   
+            - run:
+               name: Install JUnit coverage reporter
+               command: yarn add --dev jest-junit   
             - run: mkdir test-results
             - run:
                 name: Test application
