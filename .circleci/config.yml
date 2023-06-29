@@ -1,25 +1,26 @@
 version: 2.1
 
 orbs:
-    node: circleci/node@3.0.1
+    node: circleci/node@5.1.0
 
 jobs:
     build-and-test:
         docker:
             - image: cimg/node:12.16
-        parallelism: 3
+        parallelism: 5
         steps:
             - checkout
+            - node/install-packages:
+                pkg-manager: yarn      
+            - run: mkdir test-results
             - run:
-                name: Install JUnit coverage reporter
-                command: yarn add --dev jest-junit
-            - run:
+                name: Test application
                 command: |
-                    npx jest --listTests | circleci tests run --command=“JEST_JUNIT_ADD_FILE_ATTRIBUTE=true xargs npx jest --config jest.config.js --runInBand --” --verbose --split-by=timings
-                environment:
-                  JEST_JUNIT_OUTPUT_DIR: ./reports/
+                    TEST=$(circleci tests glob "src/__tests__/*.js" | circleci tests run --split-by=timings)
+                    yarn test $TEST
+
             - store_test_results:
-                path: ./reports/
+                path: test-results
 
 workflows:
     build-and-test:
